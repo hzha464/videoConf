@@ -2,7 +2,7 @@ const os = require('os') //operating system module. part of node
 const mediasoup = require('mediasoup')
 const totalThreads = os.cpus().length //maximum number of allowed workers
 // console.log(totalThreads)
-const config = require('./config/config')
+const config = require('../config/config')
 
 const createWorkers = ()=>new Promise(async(resolve, reject)=>{
     let workers = []
