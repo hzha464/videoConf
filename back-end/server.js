@@ -55,6 +55,57 @@ io.on('connect', socket=>{
         })
             
     })
+
+    socket.on('requestTransport', async({type},ackCb)=>{
+        let clientTransportParams
+        if(type === 'producer'){
+            clientTransportParams = await client.addTransport(type)
+        }else if(type === 'consumer'){
+
+        }
+        ackCb(clientTransportParams)
+    })
+    socket.on('connectTransport',async({dtlsParameters,type,audioPid},ackCb)=>{
+        if(type === "producer"){
+            try{
+                await client.upstreamTransport.connect({dtlsParameters}) 
+                ackCb("success")               
+            }catch(error){
+                console.log(error)
+                ackCb('error')
+            }
+        }else if(type === "consumer"){
+            // find the right transport, for this consumer
+            try{
+                const downstreamTransport = client.downstreamTransports.find(t=>{
+                    return t.associatedAudioPid === audioPid
+                })
+                downstreamTransport.transport.connect({dtlsParameters})
+                ackCb("success")
+            }catch(error){
+                console.log(error)
+                ackCb("error")
+            }
+        }
+    })
+    socket.on('startProducing',async({kind,rtpParameters},ackCb)=>{
+        // create a producer with the rtpParameters we were sent
+        try{
+            const newProducer = await client.upstreamTransport.produce({kind,rtpParameters})
+            //add the producer to this client obect
+            // client.addProducer(kind,newProducer)
+            // if(kind === "audio"){
+            //     client.room.activeSpeakerList.push(newProducer.id)
+            // }
+            // the front end is waiting for the id
+            ackCb(newProducer.id)
+        }catch(err){
+            console.log(err)
+            ackCb(err)
+        }
+    })
+
+    
 })
 
 httpsServer.listen(config.port)

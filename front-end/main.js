@@ -2,10 +2,16 @@ import './style.css'
 import buttons from './uiStuff/uiButton'
 import { io } from 'socket.io-client'
 import{Device} from 'mediasoup-client'
-import { createProducerTransport } from './mediaSoupFunctions/createProducerTransport'
+import createProducerTransport from './mediaSoupFunctions/createProducerTransport.js'
+import createProducer from './mediaSoupFunctions/createProducer.js'
 const socket = io('https://localhost:3031');
+
 let device = null
 let localStream = null
+let producerTransport = null
+let videoProducer = null
+let audioProducer = null //THIS client's producer
+let consumers = {} //key off the audioPid
 
 socket.on('connect',()=>{
     console.log('connected')
@@ -17,7 +23,6 @@ const joinRoom = async()=>{
 //    console.log(joinRoom)
     device = new Device()
     await device.load({routerRtpCapabilities: joinRoom.routerRtpCapabilities})
-    console.log(device)
     buttons.control.classList.remove('d-none')
 }
 
@@ -33,7 +38,10 @@ const enableFeed = async()=>{
 }
 
 const sendFeed = async()=>{
-    producerTransport = await createProducerTransport(socket)
+    producerTransport = await createProducerTransport(socket,device)
+    const producer = await createProducer(producerTransport,localStream)
+    console.log(producer)
+    buttons.hangUp.disabled = false
 }
 buttons.joinRoom.addEventListener('click', joinRoom)
 buttons.enableFeed.addEventListener('click', enableFeed)
