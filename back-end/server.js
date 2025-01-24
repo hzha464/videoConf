@@ -43,7 +43,7 @@ io.on('connect', socket=>{
         if(!requestedRoom){
             const workerToUse = await getWorker(workers)
             requestedRoom = new Room(roomName, workerToUse)
-            await requestedRoom.createRouter()
+            await requestedRoom.createRouter(io)
             rooms.push(requestedRoom)
         }
         client.room = requestedRoom
@@ -93,7 +93,7 @@ io.on('connect', socket=>{
         try{
             const newProducer = await client.upstreamTransport.produce({kind,rtpParameters})
             //add the producer to this client obect
-            // client.addProducer(kind,newProducer)
+            client.addProducer(kind,newProducer)
             // if(kind === "audio"){
             //     client.room.activeSpeakerList.push(newProducer.id)
             // }
@@ -102,6 +102,14 @@ io.on('connect', socket=>{
         }catch(err){
             console.log(err)
             ackCb(err)
+        }
+    })
+
+    socket.on('audioChange',typeOfChange=>{
+        if(typeOfChange === "mute"){
+            client?.producer?.audio?.pause()
+        }else{
+            client?.producer?.audio?.resume()
         }
     })
 

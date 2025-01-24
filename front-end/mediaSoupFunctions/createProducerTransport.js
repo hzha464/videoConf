@@ -16,7 +16,7 @@ const createProducerTransport = (socket,device) => new Promise(async(resolve, re
         console.log("Produce event is now running")
         const { kind, rtpParameters } = parameters
         const produceResp = await socket.emitWithAck('startProducing',{kind, rtpParameters})
-        console.log(produceResp,"produceResp is back!")
+        console.log(produceResp,"prod uceResp is back!")
         if(produceResp === "error"){
             errback()
         }else{
