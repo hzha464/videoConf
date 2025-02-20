@@ -24,6 +24,11 @@ const createProducerTransport = (socket,device) => new Promise(async(resolve, re
         }
     })
 
+    // setTimeout(async()=>{
+    //     const stats = await producerTransport.getStats()
+    //     for (const report of stats.values()) {
+    //         console.log(report.type)
+    //     }}, 1000)
     resolve(producerTransport)
 })
 export default createProducerTransport

@@ -5,7 +5,7 @@ class Client{
         this.userName = userName
         this.socket = socket
         this.upStreamTransport = null
-        this.downStreamTransport = []
+        this.downstreamTransports = []
         this.producer = {}
         this.consumer = []
         this.room = null

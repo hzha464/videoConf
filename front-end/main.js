@@ -4,6 +4,8 @@ import { io } from 'socket.io-client'
 import{Device} from 'mediasoup-client'
 import createProducerTransport from './mediaSoupFunctions/createProducerTransport.js'
 import createProducer from './mediaSoupFunctions/createProducer.js'
+import requestTransportToConsume from './mediaSoupFunctions/requestTransportToComsume'
+
 const socket = io('https://localhost:3031');
 
 let device = null
@@ -16,13 +18,46 @@ let consumers = {} //key off the audioPid
 socket.on('connect',()=>{
     console.log('connected')
 })
+
+socket.on('updateActiveSpeakers',async newListOfActives=>{
+
+      console.log(newListOfActives)
+      let slot = 0
+      const remoteEls = document.getElementsByClassName('remote-video')
+      for(let el of remoteEls){
+        el.srcObject = null
+      }
+      newListOfActives.forEach(aid=>{
+        if(aid !== audioProducer?.id){
+
+          const remoteVideo = document.getElementById(`remote-video-${slot}`)
+          const remoteVideoUserName = document.getElementById(`username-${slot}`)
+          const consumerForThisSlot = consumers[aid]
+          remoteVideo.srcObject = consumerForThisSlot?.combinedStream
+          remoteVideoUserName.innerHTML = consumerForThisSlot?.userName
+          slot++
+        }
+      })
+  })
+  
+  socket.on('newProducersToConsume',consumeData=>{
+
+    requestTransportToConsume(consumeData,socket,device,consumers)
+  })
+
+
+
 const joinRoom = async()=>{
-   const userName =document.getElementById('username').value
-   const roomName =document.getElementById('room-input').value
-   const joinRoom = await socket.emitWithAck('join-room',{userName,roomName})
-//    console.log(joinRoom)
+    const userName =document.getElementById('username').value
+    const roomName =document.getElementById('room-input').value
+    const joinRoomResp = await socket.emitWithAck('join-room',{userName,roomName})
+    console.log("now",joinRoomResp)
     device = new Device()
-    await device.load({routerRtpCapabilities: joinRoom.routerRtpCapabilities})
+    await device.load({routerRtpCapabilities: joinRoomResp.routerRtpCapabilities})
+    requestTransportToConsume(joinRoomResp,socket,device,consumers)
+
+
+
     buttons.control.classList.remove('d-none')
 }
 
@@ -43,6 +78,7 @@ const sendFeed = async()=>{
     audioProducer = producers.audioProducer
     videoProducer = producers.videoProducer
     console.log(producers)
+
     buttons.hangUp.disabled = false
 }
 
