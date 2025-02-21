@@ -5,8 +5,10 @@ import{Device} from 'mediasoup-client'
 import createProducerTransport from './mediaSoupFunctions/createProducerTransport.js'
 import createProducer from './mediaSoupFunctions/createProducer.js'
 import requestTransportToConsume from './mediaSoupFunctions/requestTransportToComsume'
-
-const socket = io('https://localhost:3031');
+import config from './config.js'
+// const socket = io('https://localhost:3031');
+let address = 'http://'+config.ip+':3031'
+const socket = io(address);
 
 let device = null
 let localStream = null
