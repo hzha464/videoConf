@@ -220,6 +220,13 @@ io.on('connect', socket=>{
             ackCb("error")
         }
     })
+
+
+
+    socket.on("draw", (data) => {
+        // Broadcast to all other clients
+        socket.broadcast.emit("draw", data);
+      });
 })
 
 // httpsServer.listen(config.port)

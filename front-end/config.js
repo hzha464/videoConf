@@ -1,4 +1,4 @@
 const config = {
-    ip:'10.59.4.140'
+    ip:'172.24.61.25'
 }
 export default config
