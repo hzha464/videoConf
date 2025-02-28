@@ -207,6 +207,19 @@ io.on('connect', socket=>{
         await consumerToResume[kind].resume()
         ackCb()
     })
+
+    socket.on('leave-room',async(ackCb)=>{
+        // client.room.removeClient(client)
+        // if(client.room.clients.length === 0){
+        //     client.room.close()
+        //     rooms.splice(rooms.indexOf(client.room),1)
+        // }
+        try{
+            ackCb("closed")
+        }catch(err){
+            ackCb("error")
+        }
+    })
 })
 
 // httpsServer.listen(config.port)

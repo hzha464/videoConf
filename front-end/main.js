@@ -104,7 +104,17 @@ const muteAudio = ()=>{
       socket.emit('audioChange','mute')
     }
 }
+
+const hangUp = async() => {
+  const closedResp = await socket.emitWithAck('leave-room')
+  console.log(closedResp)
+  console.log(consumers)
+  // producerTransport?.close()
+  // consumerTran
+
+}
 buttons.joinRoom.addEventListener('click', joinRoom)
 buttons.enableFeed.addEventListener('click', enableFeed)
 buttons.sendFeed.addEventListener('click', sendFeed)
 buttons.muteBtn.addEventListener('click',muteAudio)
+buttons.hangUp.addEventListener('click',hangUp)

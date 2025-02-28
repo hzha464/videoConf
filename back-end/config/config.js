@@ -47,7 +47,7 @@ const config = {
         {
           // ip: '127.0.0.1', //anywhere
           ip: '0.0.0.0', //anywhere
-          announcedIp: '10.59.2.110' // replace by public IP address
+          announcedIp: '10.59.4.140' // replace by public IP address
           // announcedIp: null // replace by public IP address
         }
       ],
